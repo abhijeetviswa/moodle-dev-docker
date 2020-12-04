@@ -1,0 +1,4 @@
+moodle/*
+!moodle/.gitkeep
+moodledata/*
+!moodledata/.gitkeep

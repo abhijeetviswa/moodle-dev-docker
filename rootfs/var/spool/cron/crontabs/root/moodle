@@ -1,0 +1,1 @@
+*/1 * * * *  /bin/bash -c 'source /env.sh && php /moodle/admin/cli/cron.php >> /moodledata/cron.log 2> /moodledata/cron.err'
