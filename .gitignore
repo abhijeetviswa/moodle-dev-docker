@@ -6,3 +6,5 @@ moodledata/*
 
 extras/*
 !extras/.gitkeep
+
+docker-compose.yml
