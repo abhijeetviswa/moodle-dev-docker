@@ -10,7 +10,6 @@ services:
       - MOODLE_DB_PORT=3306
       - XDEBUG_MODE=debug
       - XDEBUG_CONFIG=idekey=PHPSTORM
-      - MOODLE_SKIP_DATABASE_INSTALL=yes
     depends_on:
       - "mariadb"
     ports:
