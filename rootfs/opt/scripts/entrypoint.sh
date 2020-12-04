@@ -1,7 +1,6 @@
 #! /bin/bash
 
 set -e
-set -x
 
 # Wait for Mariadb to comeup
 max_retries=3
