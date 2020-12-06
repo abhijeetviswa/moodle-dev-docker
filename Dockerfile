@@ -3,11 +3,11 @@ FROM alpine:3.12
 # RUN echo $'\n@edge http://dl-cdn.alpinelinux.org/alpine/edge/main\n\
 # @edgecommunity http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories
 
-RUN apk --update \
-    add apache2 \
+RUN apk --update add \
     bash \
+    nginx \
+    php7-fpm \
     curl \
-    php7-apache2 \
     php7-bcmath \
     php7-bz2 \
     php7-calendar \

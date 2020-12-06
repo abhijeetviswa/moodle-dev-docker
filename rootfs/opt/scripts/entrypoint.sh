@@ -53,9 +53,21 @@ else
         cmdopts+=("--skip-database")
     fi
 
-    pushd /moodle/admin/cli > /dev/null
-    php install.php "${cmdopts[@]}"
-    popd > /dev/null
+    # Install Moodle
+    php /moodle/admin/cli/install.php "${cmdopts[@]}"
+
+    # Change wwwroot so that instance is accessible from any ip
+    new_root="// Configure wwwroot to be accessible from any ip
+if (empty(\$_SERVER['HTTP_HOST'])) {\\
+    \$_SERVER['HTTP_HOST'] = 'localhost:80';\\
+}\\
+if (isset(\$_SERVER['HTTPS']) \&\& \$_SERVER['HTTPS'] == 'on') {\\
+  \$CFG->wwwroot   = 'https://' . \$_SERVER['HTTP_HOST'];\\
+} else {\\
+  \$CFG->wwwroot   = 'http://' . \$_SERVER['HTTP_HOST'];\\
+}"
+    sed -Ei "s|\\\$CFG->wwwroot\s*=(.*)|$new_root|g" /moodle/config.php
+
 
     # Add Debug info
     cat >> /moodle/config.php <<EOF
@@ -78,4 +90,12 @@ declare -px > /env.sh
 
 # Upgrade Moodle
 php /moodle/admin/cli/upgrade.php --non-interactive
-exec /usr/sbin/httpd -D "FOREGROUND"
+
+# Change file system permissions
+chmod -R 777 /moodle /moodledata
+
+
+# Start php-fpm and nginx
+/usr/sbin/php-fpm7
+exec /usr/sbin/nginx
+
