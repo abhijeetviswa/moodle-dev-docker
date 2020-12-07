@@ -1,3 +1,0 @@
-[submodule "moodle"]
-	path = moodle
-	url = git://git.moodle.org/moodle.git
