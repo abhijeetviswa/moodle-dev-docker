@@ -94,7 +94,6 @@ php /moodle/admin/cli/upgrade.php --non-interactive
 # Change file system permissions
 chmod -R 777 /moodle /moodledata
 
-
 # Start php-fpm and nginx
 /usr/sbin/php-fpm7
 exec /usr/sbin/nginx

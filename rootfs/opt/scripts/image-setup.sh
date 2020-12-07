@@ -32,6 +32,7 @@ EOF
 sed -i 's@^user.*@user = www@g' /etc/php7/php-fpm.d/www.conf
 sed -i 's@^group.*@group = www@g' /etc/php7/php-fpm.d/www.conf
 sed -i 's@^;chdir=.*@chdir = /moodle@g' /etc/php7/php-fpm.d/www.conf
+sed -i 's@^;clear_env.*$@clear_env = no@g' /etc/php7/php-fpm.d/www.conf
 
 # Modify php.ini settings
 sed -i 's/memory_limit = .*/memory_limit = 256M/' /etc/php7/php.ini
