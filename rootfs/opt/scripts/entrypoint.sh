@@ -57,7 +57,8 @@ else
     php /moodle/admin/cli/install.php "${cmdopts[@]}"
 
     # Change wwwroot so that instance is accessible from any ip
-    new_root="// Configure wwwroot to be accessible from any ip
+    delimiter=$'\001'
+    new_root="// Configure wwwroot to be accessible from any ip\\
 if (empty(\$_SERVER['HTTP_HOST'])) {\\
     \$_SERVER['HTTP_HOST'] = 'localhost:80';\\
 }\\
@@ -66,7 +67,7 @@ if (isset(\$_SERVER['HTTPS']) \&\& \$_SERVER['HTTPS'] == 'on') {\\
 } else {\\
   \$CFG->wwwroot   = 'http://' . \$_SERVER['HTTP_HOST'];\\
 }"
-    sed -Ei "s|\\\$CFG->wwwroot\s*=(.*)|$new_root|g" /moodle/config.php
+    sed -Ei "s${delimiter}\\\$CFG->wwwroot\s*=(.*)${delimiter}${new_root}${delimiter}g" /moodle/config.php
 
 
     # Add Debug info
