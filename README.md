@@ -1,7 +1,7 @@
 # Docker environment for Moodle development
 This Docker image provides a development environment for Moodle. It isn't by any means meant for a production environment.
 
-The image is based off of Alpine and runs Apache+PHP. [bitnami/mariadb](https://hub.docker.com/r/bitnami/mariadb) is used to setup the MariaDB database. XDebug 2.9.8 is also installed.
+The image is based off of Alpine and runs Nginx+PHP-FPM. [bitnami/mariadb](https://hub.docker.com/r/bitnami/mariadb) is used to setup the MariaDB database. XDebug 2.9.8 is also installed.
 
 ## Environment variables
 The following environment variables are used by this image:
