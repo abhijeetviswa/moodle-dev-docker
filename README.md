@@ -29,5 +29,4 @@ After first install of Moodle, the file '.initialized' is placed inside '/moodle
 
 If the container starts up sucessfully, the Moodle instance can be visited on 'http://localhost' on the host machine.
 
-This image uses the `php7-pecl-xdebug` package from Alpine's package repository. As of writing this document, XDebug 2.9.8 is the default with 3.0 in the edge branch.
-
+This image uses the `php7-pecl-xdebug` package from Alpine's package repository. This image is based off of Alpine 3.12 and hence uses XDebug 2.9.8. Alpine 3.13 will bring XDebug 3 as well.
