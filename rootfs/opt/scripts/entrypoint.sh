@@ -5,13 +5,13 @@ set -e
 # Wait for Mariadb to comeup
 max_retries=3
 i=1
-args=("-h" "$MOODLE_DB_HOST" "-u" "$MOODLE_DB_USER" "status")
+mariadb_connection_args=("-h" "$MOODLE_DB_HOST" "-u" "$MOODLE_DB_USER")
 if [ ! -z "$MOODLE_DB_PASSWORD" ]; then
     args+=("-p=$MOODLE_DB_PASSWORD")
 fi
 
 echo "Attempting to connect to MariaDB"
-until mysqladmin "${args[@]}"
+until mysqladmin "${mariadb_connection_args[@]}" "status"
 do
     sleep 5 && [[ i -eq $max_retries ]] && echo "MariaDB didn't comeup on time" && exit 1
     echo "Attempting to connect to MariaDB (#$i)"
@@ -29,36 +29,39 @@ else
 
     chown root:root /moodle /moodledata
 
-    # install moodle
+    # Create database if it does not exist
+    mysqlshow "${mariadb_connection_args[@]}" "$MOODLE_DB_NAME" > /dev/null 2>&1 || mysqladmin "${mariadb_connection_args[@]}" create "$MOODLE_DB_NAME"
 
-    cmdopts=(
-        "--non-interactive"
-        "--chmod=2750"
-        "--wwwroot=http://localhost:80"
-        "--dataroot=/moodledata"
-        "--dbtype=mariadb"
-        "--fullname=Moodle Dev"
-        "--shortname=Moodle Dev"
-        "--dbhost=$MOODLE_DB_HOST"
-        "--dbname=$MOODLE_DB_NAME"
-        "--dbuser=$MOODLE_DB_USER"
-        "--dbpass=$MOODLE_DB_PASSWORD"
-        "--dbport=$MOODLE_DB_PORT"
-        "--adminemail=admin@email.com"
-        "--adminpass=adminadmin"
-        "--agree-license"
-    )
+    if [ ! -f /moodle/config.php ]; then
+        # install moodle
+        cmdopts=(
+            "--non-interactive"
+            "--chmod=2750"
+            "--wwwroot=http://localhost:80"
+            "--dataroot=/moodledata"
+            "--dbtype=mariadb"
+            "--fullname=Moodle Dev"
+            "--shortname=Moodle Dev"
+            "--dbhost=$MOODLE_DB_HOST"
+            "--dbname=$MOODLE_DB_NAME"
+            "--dbuser=$MOODLE_DB_USER"
+            "--dbpass=$MOODLE_DB_PASSWORD"
+            "--dbport=$MOODLE_DB_PORT"
+            "--adminemail=admin@email.com"
+            "--adminpass=adminadmin"
+            "--agree-license"
+        )
 
-    if [ ! -z "$MOODLE_SKIP_DATABASE_INSTALL" ]; then
-        cmdopts+=("--skip-database")
-    fi
+        if [ ! -z "$MOODLE_SKIP_DATABASE_INSTALL" ]; then
+            cmdopts+=("--skip-database")
+        fi
 
-    # Install Moodle
-    php /moodle/admin/cli/install.php "${cmdopts[@]}"
+        # Install Moodle
+        php /moodle/admin/cli/install.php "${cmdopts[@]}"
 
-    # Change wwwroot so that instance is accessible from any ip
-    delimiter=$'\001'
-    new_root="// Configure wwwroot to be accessible from any ip\\
+        # Change wwwroot so that instance is accessible from any ip
+        delimiter=$'\001'
+        new_root="// Configure wwwroot to be accessible from any ip\\
 if (empty(\$_SERVER['HTTP_HOST'])) {\\
     \$_SERVER['HTTP_HOST'] = 'localhost:80';\\
 }\\
@@ -67,16 +70,32 @@ if (isset(\$_SERVER['HTTPS']) \&\& \$_SERVER['HTTPS'] == 'on') {\\
 } else {\\
   \$CFG->wwwroot   = 'http://' . \$_SERVER['HTTP_HOST'];\\
 }"
-    sed -Ei "s${delimiter}\\\$CFG->wwwroot\s*=(.*)${delimiter}${new_root}${delimiter}g" /moodle/config.php
+        sed -Ei "s${delimiter}\\\$CFG->wwwroot\s*=(.*)${delimiter}${new_root}${delimiter}g" /moodle/config.php
 
 
-    # Add Debug info
-    cat >> /moodle/config.php <<EOF
+        # Add Debug info
+        cat >> /moodle/config.php <<EOF
 @error_reporting(E_ALL | E_STRICT);
 @ini_set('display_errors', '1');
 \$CFG->debug = (E_ALL | E_STRICT);
 \$CFG->debugdisplay = 1;
 EOF
+    else
+        # Install database
+
+        cmdopts=(
+            "--dataroot=/moodledata"
+            "--dbtype=mariadb"
+            "--fullname=Moodle Dev"
+            "--shortname=Moodle Dev"
+            "--adminemail=admin@email.com"
+            "--adminpass=adminadmin"
+            "--agree-license"
+        )
+
+        php /moodle/admin/cli/install_database.php "${cmdopts[@]}"
+    fi
+
     touch /moodle/.initialized
 fi
 
