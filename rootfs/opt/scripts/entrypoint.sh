@@ -99,6 +99,9 @@ EOF
     touch /moodle/.initialized
 fi
 
+# Install composer packages
+composer install -d /moodle
+
 # Dump current environment
 declare -px > /env.sh
 

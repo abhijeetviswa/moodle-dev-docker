@@ -6,8 +6,8 @@ FROM alpine:3.12
 RUN apk --update add \
     bash \
     nginx \
-    php7-fpm \
     curl \
+    composer \
     php7-bcmath \
     php7-bz2 \
     php7-calendar \
@@ -15,6 +15,7 @@ RUN apk --update add \
     php7-ctype \
     php7-curl \
     php7-dom \
+    php7-fpm \
     php7-gd \
     php7-iconv \
     php7-json \
@@ -28,10 +29,13 @@ RUN apk --update add \
     php7-pdo_sqlite \
     php7-phar \
     php7-session \
+    php7-sodium \
     php7-xml \
     php7-xmlreader \
     php7-zip \
     php7-simplexml \
+    php7-xmlwriter \
+    php7-tokenizer \
     php7-intl \
     php7-fileinfo \
     php7-xmlrpc \
